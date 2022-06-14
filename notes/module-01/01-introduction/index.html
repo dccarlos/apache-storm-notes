@@ -1,0 +1,788 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.3.0, mkdocs-material-8.3.4">
+    
+    
+      
+        <title>1 .Notification Module - Apache Storm Notes By Carlos Dávila</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.4a0965b7.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.cbb835fc.min.css">
+        
+          
+          
+          <meta name="theme-color" content="#2094f3">
+        
+      
+      
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="blue" data-md-color-accent="blue">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#introduction" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="Apache Storm Notes By Carlos Dávila" class="md-header__button md-logo" aria-label="Apache Storm Notes By Carlos Dávila" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Apache Storm Notes By Carlos Dávila
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              1 .Notification Module
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="Apache Storm Notes By Carlos Dávila" class="md-nav__button md-logo" aria-label="Apache Storm Notes By Carlos Dávila" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    Apache Storm Notes By Carlos Dávila
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2">
+          Apache Storm
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Apache Storm" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          Apache Storm
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_1" type="checkbox" id="__nav_2_1" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2_1">
+          Fundamentals
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Fundamentals" data-md-level="2">
+        <label class="md-nav__title" for="__nav_2_1">
+          <span class="md-nav__icon md-icon"></span>
+          Fundamentals
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          1 .Notification Module
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        1 .Notification Module
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#whats-apache-storm" class="md-nav__link">
+    What's Apache Storm?
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#use-cases" class="md-nav__link">
+    Use cases
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#features" class="md-nav__link">
+    Features
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#storm-components" class="md-nav__link">
+    Storm components
+  </a>
+  
+    <nav class="md-nav" aria-label="Storm components">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#zookeeper" class="md-nav__link">
+    Zookeeper
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nimbus" class="md-nav__link">
+    Nimbus
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#supervisor-nodes" class="md-nav__link">
+    Supervisor nodes
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#storm-data-model" class="md-nav__link">
+    Storm data model
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#storm-topology" class="md-nav__link">
+    Storm topology
+  </a>
+  
+    <nav class="md-nav" aria-label="Storm topology">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tuple-message" class="md-nav__link">
+    Tuple (Message)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#stream" class="md-nav__link">
+    Stream
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#spout-source" class="md-nav__link">
+    Spout (Source)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bolt-processor" class="md-nav__link">
+    Bolt (Processor)
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#operation-modes" class="md-nav__link">
+    Operation Modes
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#whats-apache-storm" class="md-nav__link">
+    What's Apache Storm?
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#use-cases" class="md-nav__link">
+    Use cases
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#features" class="md-nav__link">
+    Features
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#storm-components" class="md-nav__link">
+    Storm components
+  </a>
+  
+    <nav class="md-nav" aria-label="Storm components">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#zookeeper" class="md-nav__link">
+    Zookeeper
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nimbus" class="md-nav__link">
+    Nimbus
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#supervisor-nodes" class="md-nav__link">
+    Supervisor nodes
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#storm-data-model" class="md-nav__link">
+    Storm data model
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#storm-topology" class="md-nav__link">
+    Storm topology
+  </a>
+  
+    <nav class="md-nav" aria-label="Storm topology">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tuple-message" class="md-nav__link">
+    Tuple (Message)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#stream" class="md-nav__link">
+    Stream
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#spout-source" class="md-nav__link">
+    Spout (Source)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bolt-processor" class="md-nav__link">
+    Bolt (Processor)
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#operation-modes" class="md-nav__link">
+    Operation Modes
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+
+
+<h1 id="introduction">Introduction</h1>
+<h2 id="whats-apache-storm">What's Apache Storm?</h2>
+<p>Apache Storm is a free and open source <strong>distributed realtime computation system</strong>. It makes it easy
+to reliably process unbounded streams of data, <strong>doing for realtime processing what Hadoop did for
+batch processing</strong>.</p>
+<blockquote>
+<p>Storm is to real-time processing what Hadoop is to batch processing.</p>
+</blockquote>
+<h2 id="use-cases">Use cases</h2>
+<ul>
+<li><strong>Stream processing</strong></li>
+<li><strong>Continuous computation</strong> (i.e.: aggregations)</li>
+<li><strong>Distributed RPC (DRPC)</strong> The idea behind distributed RPC (DRPC) is to parallelize the
+  computation of really intense functions on the fly using Storm</li>
+<li><strong>Real-time analytics</strong></li>
+</ul>
+<h2 id="features">Features</h2>
+<ul>
+<li>Fast</li>
+<li>Horizontally scalable</li>
+<li>Fault tolerant</li>
+<li>Guaranteed data processing</li>
+<li>Easy to operate</li>
+<li>Programming language agnostic</li>
+</ul>
+<h2 id="storm-components">Storm components</h2>
+<h3 id="zookeeper">Zookeeper</h3>
+<p><em>A Storm cluster follows a master-slave model where the master and slave processes are coordinated
+through ZooKeeper</em>. The following are the components of a Storm cluster. All of the states
+associated with the cluster and the various tasks submitted to Storm are stored in ZooKeeper. Nimbus
+and supervisor nodes do not communicate directly with each other, but through ZooKeeper. As all data
+is stored in ZooKeeper, both Nimbus and the supervisor daemons can be killed abruptly without
+adversely affecting the cluster.</p>
+<h3 id="nimbus">Nimbus</h3>
+<p>The Nimbus node is the single stateless master in a Storm cluster (it stores all of its data in ZK).
+It is responsible for distributing the application code across various worker nodes, assigning tasks
+to different machines, monitoring tasks for any failures, and restarting them as and when required.
+If the active node goes down, then the passive node will become an Active node.</p>
+<p>The Storm workers can work smoothly even if all the Nimbus nodes go down but the user can't submit
+any new jobs into the cluster or the cluster will not be able to reassign the failed workers to
+another node.</p>
+<h3 id="supervisor-nodes">Supervisor nodes</h3>
+<p><strong>Supervisor nodes are the worker nodes in a Storm cluster</strong>. <strong>Each supervisor node runs a
+supervisor daemon that is responsible for creating, starting, and stopping worker processes to
+execute the tasks assigned to that node</strong>. Like Nimbus, a supervisor daemon is also fail- fast and
+stores all of its states in ZooKeeper so that it can be restarted without any state loss. A single
+supervisor daemon normally handles multiple worker processes running on that machine.</p>
+<p><img alt="intro-zk-01" src="../intro-zk-01.png" /></p>
+<h3 id="storm-data-model">Storm data model</h3>
+<p><strong>The basic unit of data that can be processed by a Storm application is called a tuple</strong>. Each
+tuple consists of a predefined list of fields. The value of each field can be a byte, char, integer,
+long, float, double, Boolean, or byte array. Storm also provides an API to define your own
+datatypes, which can be serialized as fields in a tuple. A tuple is dynamically typed, that is, you
+just need to define the names of the fields in a tuple and not their datatype.</p>
+<h3 id="storm-topology">Storm topology</h3>
+<p>In Storm terminology, a topology is an abstraction that defines the graph of the computation. <strong>You
+create a Storm topology and deploy it on a Storm cluster to process data</strong>. A topology can be
+represented by a direct acyclic graph (DAG), where each node does some kind of processing and
+forwards it to the next node(s) in the flow. The following diagram is a sample Storm topology:</p>
+<p><img alt="intro-storm-topology-01" src="../intro-storm-topology-01.png" /></p>
+<h4 id="tuple-message">Tuple (Message)</h4>
+<p>A single message/record that flows between the different instances of a topology is called a tuple.</p>
+<h4 id="stream">Stream</h4>
+<p>The key abstraction in Storm is that of a stream. <strong>A stream is an unbounded sequence of tuples that
+can be processed in parallel by Storm. Each stream can be processed by a single or multiple types of
+bolts</strong></p>
+<h4 id="spout-source">Spout (Source)</h4>
+<p>A spout is the source of tuples in a Storm topology. <strong>It is responsible for reading or listening to
+data from an external source</strong>, for example, by reading from a log file or listening for new
+messages in a queue and publishing them—<strong>emitting into Storm streams</strong>. <strong>A spout can emit multiple
+streams, each of a different schema</strong>. <strong>Storm track all the tuples containing a message ID during
+the processing across the cluster, if tuples doesn't have a message ID tracking is skipped</strong>.</p>
+<h4 id="bolt-processor">Bolt (Processor)</h4>
+<p>A bolt is the processing powerhouse of a Storm topology and is responsible for transforming a
+stream.</p>
+<h3 id="operation-modes">Operation Modes</h3>
+<p>Storm has two modes of operation: <strong>local mode</strong> and <strong>remote mode</strong>. In local mode, you can develop
+and test topologies completely in process on your local machine. In remote mode, you submit
+topologies for execution on a cluster of machines.</p>
+<h1 id="tldr">TL;DR</h1>
+<blockquote>
+<p>Taken from https://jansipke.nl/storm-in-pictures/</p>
+</blockquote>
+<ul>
+<li>A topology is a description of a workflow. It defines how the code you write is put together and
+  executed.</li>
+<li>A spout is responsible for data input. Storm does not impose any restriction on the source of the
+  data. Hadoop, for example, wants the data to be in its own filesystem, HDFS. With Storm, you can
+  use any data source you want as long as you’re able to write a piece of code for it that fetches
+  this data. Typically, the input data comes from a queue such as Kafka or ActiveMQ, but databases,
+  filesystems or web servers are also fine.</li>
+<li>A bolt is responsible for processing the data. It gets data from a spout or another bolt in the
+  form of tuples. A tuple is a lightweight data format provided by Storm that you can use to wrap
+  the data you actually need to process. A bolt either processes the input data and sends it out as
+  another tuple (or set of tuples), or it stores it in some external system. This could be yet
+  another queue, database, filesystem, etc.</li>
+<li>Storm 0.9 added the notion of a metrics consumer. It is often helpful to know what is going on in
+  your topology. The Storm UI provides some insight, but this is on a general level, i.e. it shows
+  how many tuples were transmitted between spouts and bolts, and how many were acknowledged or
+  failed. It can’t tell anything about the internal state of your spouts and bolts, because that is
+  application specific. This is where the metrics framework, and the metrics consumer in particular,
+  comes into play. The metrics framework allows you to create metrics variables in your spouts and
+  bolts. These metrics are transmitted to the metrics consumer. Like the bolts, it is then your
+  responsibility to push these metrics to an external system for storage or visualization.</li>
+</ul>
+<p><img alt="intro-storm-topology-02" src="../intro-storm-topology-02.png" /></p>
+<ul>
+<li>There is a single master node that is responsible for the scheduling of tasks in the cluster. One
+  process on this machine is called Nimbus, which performs the actual scheduling of tasks. Another
+  process is the Storm UI, which can be used to view the cluster and the topologies.</li>
+<li>There are several slave nodes that actually execute your code. One process on these machines is
+  the Supervisor, which supervises the process that actually executes your code. Another process,
+  new since Storm 0.9, is the Logviewer. It is now possible to use the Storm UI, pinpoint any
+  problem in the execution of your code and then click through to the logfile on the slave node that
+  executed the code.</li>
+<li>Storm uses ZooKeeper to perform cluster management. In a development environment, a single
+  ZooKeeper node is fine. In a production environment, it is necessary to use three, five or more (
+  2n+1) nodes.</li>
+</ul>
+<p><img alt="intro-storm-topology-03" src="../intro-storm-topology-03.png" /></p>
+<ul>
+<li>Storm tries to make use of as much parallelism as possible. To achieve this, it uses multiple
+  machines (supervisors), runs several Java virtual machines on each machine (workers) and uses many
+  threads per JVM (executors). The following picture illustrates this:</li>
+</ul>
+<p><img alt="storm-architecture" src="../storm-architecture.png" /></p>
+<ul>
+<li>The number of supervisors depends on the number of machines you have installed the Storm
+  supervisor process on. The number of workers each of these machines run is configured in the *
+  storm.yaml* configuration file. By default there are four worker processes (JVMs)  per supervisor,
+  but this can be changed by adding port numbers to this file.</li>
+</ul>
+<div class="codehilite"><pre><span></span><code><span class="nt">supervisor.slots.ports</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6700</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6701</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6702</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6703</span><span class="w"></span>
+</code></pre></div>
+
+<ul>
+<li>The number of supervisors and workers that are useable by Storm are now set. Now we can tell Storm
+  how we want to run our topology on this cluster:</li>
+</ul>
+<p><img alt="intro-storm-topology-04" src="../intro-storm-topology-04.png" /></p>
+<p>We start by creating a Config object and setting the number of workers we want to use for this
+specific topology. In this case we selected two of them. Then we create a TopologyBuilder object and
+set our spout, our bolts and our metrics consumer. We can set two parameters that tell Storm how
+many to have of these components and how parallel they should be executed:</p>
+<ul>
+<li>The first parameter is the parallelism hint. This tells Storm how many executors (threads) should
+  be used for this component. By default this number is equal to 1.</li>
+<li>The second number we can set is the number of tasks. This tells Storm how many times the component
+  should be present in total. If the number of tasks is higher than the parallelism hint, then there
+  will be executors that run more than one task serially. For example, when using a parallelism hint
+  of 2 and a number of tasks of 6, there will be 2 executors that run 3 components serially. By
+  default the number of tasks is equal to the parallelism hint.</li>
+</ul>
+
+              
+            </article>
+            
+          </div>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+    <nav class="md-footer__inner md-grid" aria-label="Footer" >
+      
+        
+        <a href="../../.." class="md-footer__link md-footer__link--prev" aria-label="Previous: Home" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              Home
+            </div>
+          </div>
+        </a>
+      
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": "../../..", "features": [], "search": "../../../assets/javascripts/workers/search.85cb4492.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.f758a944.min.js"></script>
+      
+    
+  </body>
+</html>
