@@ -1,0 +1,16 @@
+site_name: Apache Storm Notes By Carlos Dávila
+
+markdown_extensions:
+  - footnotes
+  - codehilite
+
+theme:
+  name: material
+  palette:
+    primary: "blue"
+    accent: "blue"
+nav:
+  - "Home": "index.md"
+  - "Apache Storm":
+      - "Fundamentals":
+          - "1 .Notification Module": "notes/module-01/01-introduction.md"
