@@ -1,0 +1,1028 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.3.0, mkdocs-material-8.3.4">
+    
+    
+      
+        <title>3. Parallelism and partitioning - Apache Storm Notes By Carlos Dávila</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.4a0965b7.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.cbb835fc.min.css">
+        
+          
+          
+          <meta name="theme-color" content="#2094f3">
+        
+      
+      
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="blue" data-md-color-accent="blue">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#storm-parallelism-and-data-partitioning" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="Apache Storm Notes By Carlos Dávila" class="md-header__button md-logo" aria-label="Apache Storm Notes By Carlos Dávila" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Apache Storm Notes By Carlos Dávila
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              3. Parallelism and partitioning
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="Apache Storm Notes By Carlos Dávila" class="md-nav__button md-logo" aria-label="Apache Storm Notes By Carlos Dávila" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    Apache Storm Notes By Carlos Dávila
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2">
+          Apache Storm
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Apache Storm" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          Apache Storm
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_1" type="checkbox" id="__nav_2_1" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2_1">
+          Fundamentals
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Fundamentals" data-md-level="2">
+        <label class="md-nav__title" for="__nav_2_1">
+          <span class="md-nav__icon md-icon"></span>
+          Fundamentals
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01-introduction/" class="md-nav__link">
+        1. Introduction
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02-topology-development/" class="md-nav__link">
+        2. Topology and development
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          3. Parallelism and partitioning
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        3. Parallelism and partitioning
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#parallelism-of-a-topology" class="md-nav__link">
+    Parallelism of a topology
+  </a>
+  
+    <nav class="md-nav" aria-label="Parallelism of a topology">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#worker-process-a-jvm-instance" class="md-nav__link">
+    Worker process (A JVM instance)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#executor" class="md-nav__link">
+    Executor
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#task" class="md-nav__link">
+    Task
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configure-parallelism-at-the-code-level" class="md-nav__link">
+    Configure parallelism at the code level
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#worker-process-executor-and-task-distribution" class="md-nav__link">
+    Worker process, executor, and task distribution
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rebalance-the-parallelism-of-a-topology" class="md-nav__link">
+    Rebalance the parallelism of a topology
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#different-types-of-stream-grouping-partitioning-in-the-storm-cluster" class="md-nav__link">
+    Different types of stream grouping (partitioning) in the Storm cluster
+  </a>
+  
+    <nav class="md-nav" aria-label="Different types of stream grouping (partitioning) in the Storm cluster">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#suffle-grouping" class="md-nav__link">
+    Suffle grouping
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#field-grouping" class="md-nav__link">
+    Field grouping
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#all-grouping" class="md-nav__link">
+    All grouping
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#global-grouping" class="md-nav__link">
+    Global grouping
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#direct-grouping" class="md-nav__link">
+    Direct grouping
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#local-or-shuffle-grouping" class="md-nav__link">
+    Local or shuffle grouping
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#none-grouping" class="md-nav__link">
+    None grouping
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-grouping" class="md-nav__link">
+    Custom grouping
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#guaranteed-message-processing" class="md-nav__link">
+    Guaranteed message processing
+  </a>
+  
+    <nav class="md-nav" aria-label="Guaranteed message processing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#at-least-once" class="md-nav__link">
+    At least once
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#exactly-once" class="md-nav__link">
+    Exactly once
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#at-least-one-message-processing" class="md-nav__link">
+    At-least-one Message Processing
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tick-tuple" class="md-nav__link">
+    Tick tuple
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../resources/" class="md-nav__link">
+        Resources
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#parallelism-of-a-topology" class="md-nav__link">
+    Parallelism of a topology
+  </a>
+  
+    <nav class="md-nav" aria-label="Parallelism of a topology">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#worker-process-a-jvm-instance" class="md-nav__link">
+    Worker process (A JVM instance)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#executor" class="md-nav__link">
+    Executor
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#task" class="md-nav__link">
+    Task
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configure-parallelism-at-the-code-level" class="md-nav__link">
+    Configure parallelism at the code level
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#worker-process-executor-and-task-distribution" class="md-nav__link">
+    Worker process, executor, and task distribution
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rebalance-the-parallelism-of-a-topology" class="md-nav__link">
+    Rebalance the parallelism of a topology
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#different-types-of-stream-grouping-partitioning-in-the-storm-cluster" class="md-nav__link">
+    Different types of stream grouping (partitioning) in the Storm cluster
+  </a>
+  
+    <nav class="md-nav" aria-label="Different types of stream grouping (partitioning) in the Storm cluster">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#suffle-grouping" class="md-nav__link">
+    Suffle grouping
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#field-grouping" class="md-nav__link">
+    Field grouping
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#all-grouping" class="md-nav__link">
+    All grouping
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#global-grouping" class="md-nav__link">
+    Global grouping
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#direct-grouping" class="md-nav__link">
+    Direct grouping
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#local-or-shuffle-grouping" class="md-nav__link">
+    Local or shuffle grouping
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#none-grouping" class="md-nav__link">
+    None grouping
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-grouping" class="md-nav__link">
+    Custom grouping
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#guaranteed-message-processing" class="md-nav__link">
+    Guaranteed message processing
+  </a>
+  
+    <nav class="md-nav" aria-label="Guaranteed message processing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#at-least-once" class="md-nav__link">
+    At least once
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#exactly-once" class="md-nav__link">
+    Exactly once
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#at-least-one-message-processing" class="md-nav__link">
+    At-least-one Message Processing
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tick-tuple" class="md-nav__link">
+    Tick tuple
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+
+
+<h1 id="storm-parallelism-and-data-partitioning">Storm Parallelism and Data Partitioning</h1>
+<h2 id="parallelism-of-a-topology">Parallelism of a topology</h2>
+<p>Parallelism means the distribution of jobs on multiple nodes/instances where each instance can work
+independently and can contribute to the processing of data.</p>
+<h3 id="worker-process-a-jvm-instance">Worker process (A JVM instance)</h3>
+<p>A Storm topology is executed across multiple supervisor nodes in the Storm cluster. <strong>Each of the
+nodes in the cluster can run one or more JVMs called worker processes</strong>, which are responsible for
+processing a part of the topology. <strong>A worker process is specific to one of the specific topologies
+and can execute multiple components of that topology. If multiple topologies are being run at the
+same time, none of them will share any of the workers</strong>, thus providing some degree of isolation
+between topologies.</p>
+<h3 id="executor">Executor</h3>
+<p>Within each worker process, there can be multiple threads executing parts of the topology. <strong>Each of
+these threads is called an executor. An executor can execute only one of the components, that is,
+any spout or bolt in the topology</strong>. Each executor, being a single thread, can execute only tasks
+assigned to it serially. The number of executors defined for a spout or bolt can be changed
+dynamically while the topology is running.</p>
+<h3 id="task">Task</h3>
+<p>This is the most granular unit of task execution in Storm. Each task is an instance of a spout or
+bolt. When defining a Storm topology, you can specify the number of tasks for each spout and bolt.
+Once defined, the number of tasks cannot be changed for a component at runtime. Each task can be
+executed alone or with another task of the same type, or another instance of the same spout or bolt.</p>
+<p><img alt="storm-architecture" src="../storm-architecture.png" /></p>
+<h2 id="configure-parallelism-at-the-code-level">Configure parallelism at the code level</h2>
+<p>Storm provides an API to set the number of worker processes, number of executors, and number of
+tasks at the code level.</p>
+<div class="codehilite"><pre><span></span><code><span class="n">Config</span><span class="w"> </span><span class="n">conf</span><span class="o">=</span><span class="k">new</span><span class="w"> </span><span class="n">Config</span><span class="p">();</span><span class="w"></span>
+<span class="w">    </span><span class="n">conf</span><span class="p">.</span><span class="na">setNumWorkers</span><span class="p">(</span><span class="mi">3</span><span class="p">);</span><span class="w"></span>
+</code></pre></div>
+
+<p>We can set the number of executors at the code level by passing the parallelism_hint argument in
+the <code>setSpout</code> and <code>setBolt</code> methods of class <code>org.apache.storm.topology.TopologyBuilder</code>.</p>
+<p>In code sample, we set <code>parallelism_hint=2</code> for SampleSpout and <code>parallelism_hint=4</code>
+for <code>SampleBolt</code>. At the time of execution, Storm will assign two executors for <code>SampleSpout</code> and
+four executors for <code>SampleBolt</code>.</p>
+<p>We can configure the number of tasks that can execute inside the executors. Here is the code snippet
+to show these settings in practice:</p>
+<div class="codehilite"><pre><span></span><code><span class="n">builder</span><span class="p">.</span><span class="na">setSpout</span><span class="p">(</span><span class="s">&quot;SampleSpout&quot;</span><span class="p">,</span><span class="k">new</span><span class="w"> </span><span class="n">SampleSpout</span><span class="p">(),</span><span class="mi">2</span><span class="p">).</span><span class="na">setNumTasks</span><span class="p">(</span><span class="mi">4</span><span class="p">);</span><span class="w"></span>
+</code></pre></div>
+
+<p>In the preceding code, we have configured the two executors and four tasks of <code>SampleSpout</code>.
+For <code>SampleSpout</code>, <strong>Storm will assign two tasks per executor. By default, Storm will run one task
+per executor if the user does not set the number of tasks at the code level</strong>.</p>
+<h2 id="worker-process-executor-and-task-distribution">Worker process, executor, and task distribution</h2>
+<p>Let's assume that we have:</p>
+<ul>
+<li>Worker processes set for the topology: 3</li>
+<li>Executors per <code>SampleSpout</code>: 3</li>
+<li>Executors per <code>SampleBolt</code>: 3</li>
+<li>Tasks of <code>SampleBolt</code>: 6</li>
+</ul>
+<blockquote>
+<p>Since <code>SampleBolt</code> are 6 tasks, it means 2 tasks per each of its 3 executors</p>
+</blockquote>
+<p>So we have that: <strong>total parallelism</strong> = 3 spouts + 6 bolts = 9 tasks</p>
+<h2 id="rebalance-the-parallelism-of-a-topology">Rebalance the parallelism of a topology</h2>
+<p>One of the key features of Storm is that it allows us to modify the parallelism of a topology at
+runtime. The process of updating a topology parallelism at runtime is called rebalance.</p>
+<p>There are two ways to rebalance the topology:</p>
+<ul>
+<li>Using Storm Web UI</li>
+<li>Using Storm CLI</li>
+</ul>
+<p>Here are the commands that we need to execute on Storm CLI to rebalance the topology:</p>
+<div class="codehilite"><pre><span></span><code>storm rebalance <span class="o">[</span>TopologyName<span class="o">]</span> -n <span class="o">[</span>NumberOfWorkers<span class="o">]</span> <span class="se">\</span>
+    -e <span class="o">[</span>Spout<span class="o">]=[</span>NumberOfExecutos<span class="o">]</span> <span class="se">\</span>
+    -e <span class="o">[</span>Bolt1<span class="o">]=[</span>NumberOfExecutos<span class="o">]</span> <span class="o">[</span>Bolt2<span class="o">]=[</span>NumberOfExecutos<span class="o">]</span>
+</code></pre></div>
+
+<p>The <code>rebalance</code> command will first deactivate the topology for the duration of the message timeout
+and then redistribute the workers evenly around the Storm cluster. After a few seconds or minutes,
+the topology will revert to the previous state of activation and restart the processing of input
+streams.</p>
+<h2 id="different-types-of-stream-grouping-partitioning-in-the-storm-cluster">Different types of stream grouping (partitioning) in the Storm cluster</h2>
+<p>Stream grouping in Storm provides complete control over how partitioning of tuples happens among the
+many tasks of a bolt subscribed to a stream. Storm supports the following types of stream
+groupings (partitioners):</p>
+<h3 id="suffle-grouping">Suffle grouping</h3>
+<p>Shuffle grouping distributes tuples in a uniform, random way across the tasks. An equal number of
+tuples will be processed by each task. This grouping is ideal when you want to distribute your
+processing load uniformly across the tasks and where there is no requirement for any data-driven
+partitioning.</p>
+<h3 id="field-grouping">Field grouping</h3>
+<p>As a result of the field grouping being hash <code>(fields) % (no. of tasks)</code>, it does not guarantee that
+each of the tasks will get tuples to process. For example, if you have applied a field grouping on a
+field, say <code>X</code>, with only two possible values, <code>A</code> and <code>B</code>, and created two tasks for the bolt, then
+it might be possible that both <code>hash (A) % 2</code> and <code>hash (B) % 2</code> return equal values, which will
+result in all the tuples being routed to a single task and the other being completely idle.</p>
+<p>Another common usage of field grouping is to join streams. Since partitioning happens solely on the
+basis of field values, and not the stream type, we can join two streams with any common join fields.
+The name of the fields needs not be the same. For example, in the order processing domain, we can
+join the Order stream and the ItemScanned stream to see when an order is completed:</p>
+<div class="codehilite"><pre><span></span><code><span class="n">builder</span><span class="p">.</span><span class="na">setSpout</span><span class="p">(</span><span class="s">&quot;1&quot;</span><span class="p">,</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">OrderSpout</span><span class="p">());</span><span class="w"></span>
+<span class="n">builder</span><span class="p">.</span><span class="na">setSpout</span><span class="p">(</span><span class="s">&quot;2&quot;</span><span class="p">,</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ItemScannedSpout</span><span class="p">());</span><span class="w"></span>
+<span class="n">builder</span><span class="p">.</span><span class="na">setBolt</span><span class="p">(</span><span class="s">&quot;joiner&quot;</span><span class="p">,</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">OrderJoiner</span><span class="p">())</span><span class="w"></span>
+<span class="w">    </span><span class="p">.</span><span class="na">fieldsGrouping</span><span class="p">(</span><span class="s">&quot;1&quot;</span><span class="p">,</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Fields</span><span class="p">(</span><span class="s">&quot;orderId&quot;</span><span class="p">))</span><span class="w"></span>
+<span class="w">    </span><span class="p">.</span><span class="na">fieldsGrouping</span><span class="p">(</span><span class="s">&quot;2&quot;</span><span class="p">,</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Fields</span><span class="p">(</span><span class="s">&quot;orderRefId&quot;</span><span class="p">));</span><span class="w"></span>
+</code></pre></div>
+
+<h3 id="all-grouping">All grouping</h3>
+<p><strong>All grouping is a special grouping that does not partition the tuples but replicates them to all
+the tasks, that is, each tuple will be sent to each of the bolt's tasks for processing</strong>.</p>
+<p>One common use case of all grouping is for sending signals to bolts. For example, if you are doing
+some kind of filtering on the streams, you can pass or change the filter parameters to all the bolts
+by sending them those parameters over a stream that is subscribed by all the bolt's tasks with an
+all grouping. Another example is to send a reset message to all the tasks in an aggregation bolt.</p>
+<h3 id="global-grouping">Global grouping</h3>
+<p>Global grouping does not partition the stream but sends the complete stream to the bolt's task, the
+smallest ID.</p>
+<p>Global grouping might seem redundant at first, as you can achieve the same results by defining the
+parallelism for the bolt as one if you only have one input stream. However, when you have multiple
+streams of data coming through a different path, you might want only one of the streams to be
+reduced and others to be parallel processes. For example, consider the following topology. In this,
+you might want to combine all the tuples coming from Bolt C in a single Bolt D task, while you might
+still want parallelism for tuples coming from Bolt E to Bolt D:</p>
+<p><img alt="03-.global-grouping" src="../03-global-grouping.png" /></p>
+<h3 id="direct-grouping">Direct grouping</h3>
+<p>In direct grouping, the emitter decides where each tuple will go for processing. For example, say we
+have a log stream and we want to process each log entry to be processed by a specific bolt task on
+the basis of the type of resource. In this case, we can use direct grouping. Direct grouping can
+only be used with direct streams. The <code>emitDirect</code> method takes a <code>taskId</code> parameter to specify the
+task. You can get the number of tasks for a component using
+the <code>backtype.storm.task.TopologyContext.getComponentTasks</code> method.</p>
+<h3 id="local-or-shuffle-grouping">Local or shuffle grouping</h3>
+<p>If the tuple source and target bolt tasks are running in the same worker, using this grouping will
+act as a shuffle grouping only between the target tasks running on the same worker, thus minimizing
+any network hops, resulting in increased performance. If there are no target bolt tasks running on
+the source worker process, this grouping will act similar to the shuffle grouping mentioned earlier.</p>
+<h3 id="none-grouping">None grouping</h3>
+<p>None grouping is used when you don't care about the way tuples are partitioned among various tasks.
+As of Storm 0.8, this is equivalent to using shuffle grouping.</p>
+<h3 id="custom-grouping">Custom grouping</h3>
+<p>If none of the preceding groupings fit your use case, you can define your own custom grouping by
+implementing the <code>backtype.storm.grouping.CustomStreamGrouping</code> interface.</p>
+<blockquote>
+<p>Guava is included in storm-core</p>
+</blockquote>
+<div class="codehilite"><pre><span></span><code><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">CategoryGrouping</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">CustomStreamGrouping</span><span class="p">,</span><span class="w"> </span><span class="n">Serializable</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+
+<span class="w">  </span><span class="kd">private</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">Integer</span><span class="o">&gt;</span><span class="w"> </span><span class="n">categories</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ImmutableMap</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="w"></span>
+<span class="w">      </span><span class="s">&quot;Financial&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="s">&quot;Medical&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="s">&quot;FMCG&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="s">&quot;Electronics&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="w"></span>
+<span class="w">  </span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="kd">private</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">tasks</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span>
+
+<span class="w">  </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">prepare</span><span class="p">(</span><span class="n">WorkerTopologyContext</span><span class="w"> </span><span class="n">context</span><span class="p">,</span><span class="w"> </span><span class="n">GlobalStreamId</span><span class="w"> </span><span class="n">stream</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="n">List</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span><span class="w"> </span><span class="n">targetTasks</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="n">tasks</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">targetTasks</span><span class="p">.</span><span class="na">size</span><span class="p">();</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
+
+<span class="w">  </span><span class="kd">public</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">chooseTasks</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">taskId</span><span class="p">,</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">Object</span><span class="o">&gt;</span><span class="w"> </span><span class="n">values</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="n">String</span><span class="w"> </span><span class="n">category</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">String</span><span class="p">)</span><span class="w"> </span><span class="n">values</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">ImmutableList</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="n">categories</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="n">category</span><span class="p">)</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="n">tasks</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</code></pre></div>
+
+<p>The following diagram represents the Storm groupings graphically:</p>
+<p><img alt="groupings-storm" src="../groupings-storm.png" /></p>
+<h2 id="guaranteed-message-processing">Guaranteed message processing</h2>
+<p>Storm provides two types of guarantees when processing tuples for a Storm topology.</p>
+<h4 id="at-least-once">At least once</h4>
+<p>Reliable; Tuples are processed at least once, but may be processed more than once. Use when
+subsecond latency is required and for unordered idempotent operations.</p>
+<h4 id="exactly-once">Exactly once</h4>
+<p>Tuples are processed only once. (This feature requires the use of a Trident spout and the Trident
+API. For more information)</p>
+<h3 id="at-least-one-message-processing"><code>At-least-one</code> Message Processing</h3>
+<p>In a Storm topology, a single tuple being emitted by a spout can result in a number of tuples being
+generated in the later stages of the topology.</p>
+<p><img alt="03-message-processing" src="../03-message-processing.png" /></p>
+<p>Here, <code>Spout A</code> emits a tuple <code>T(A)</code>, which is processed by <code>bolt B</code> and bolt C, which emit
+tuple <code>T(AB)</code> and <code>T(AC)</code> respectively. So, when all the tuples produced as a result of tuple <code>T(A)</code>
+—namely, the tuple tree <code>T(A)</code>, <code>T(AB)</code>, and <code>T(AC)</code>—are processed, we say that the tuple has been
+processed completely.</p>
+<p><strong>When some of the tuples in a tuple tree fail to process either due to some runtime error or a
+timeout that is configurable for each topology, then Storm considers that to be a failed tuple</strong>.</p>
+<p>Here are the six steps that are required by Storm to guarantee message processing:</p>
+<ol>
+<li>Tag each tuple emitted by a spout with a unique message ID. Storm uses this message ID to track
+   the state of the tuple tree generated by this tuple. If you use one of the emit methods that
+   doesn't take a messageId argument, Storm will not track it for complete processing. When the
+   message is processed completely, Storm will send an acknowledgement with the same messageId that
+   was used while emitting the tuple.</li>
+<li>A generic pattern implemented by spouts is that they read a message from a messaging queue, say
+   RabbitMQ, produce the tuple into the topology for further processing, and then dequeue the
+   message once it receives the acknowledgement that the tuple has been processed completely.</li>
+<li>When one of the bolts in the topology needs to produce a new tuple in the course of processing a
+   message, for example, <code>bolt B</code> in the preceding topology, then it should emit the new tuple
+   anchored with the original tuple that it got from the spout.</li>
+<li>Whenever you are done with processing a tuple in the execute method of your bolt, send an
+   acknowledgment.</li>
+<li>If there is some problem in processing a tuple, a failure signal should be sent back.</li>
+<li><strong>One of the general patterns of processing in Storm bolts is to process a tuple in, emit new
+   tuples, and send an acknowledgement at the end of the execute method</strong>.</li>
+</ol>
+<p>This model results in <code>at-least-once</code> message processing semantics, and <strong>your application should be
+ready to handle a scenario when some of the messages will be processed multiple times</strong>.</p>
+<h2 id="tick-tuple">Tick tuple</h2>
+<p>The tick tuple is a storm-generated tuple that we can configure at each bolt level, mainly for
+executing periodic tasks in the bolts (like cleaning a cache). The developer can configure the tick
+tuple at the code level while writing a bolt.</p>
+<div class="codehilite"><pre><span></span><code><span class="w">  </span><span class="kd">public</span><span class="w"> </span><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">Object</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">getComponentConfiguration</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="n">Config</span><span class="w"> </span><span class="n">conf</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Config</span><span class="p">();</span><span class="w"></span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">tickFrequencyInSeconds</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">10</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="n">conf</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="n">Config</span><span class="p">.</span><span class="na">TOPOLOGY_TICK_TUPLE_FREQ_SECS</span><span class="p">,</span><span class="w"></span>
+<span class="w">        </span><span class="n">tickFrequencyInSeconds</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">conf</span><span class="p">;</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
+</code></pre></div>
+
+<p>In the preceding code, we have configured the tick tuple time to 10 seconds. Now, Storm will start
+generating a tick tuple after every 10 seconds.</p>
+<p>We'd require to prepare our code to identify it:</p>
+<div class="codehilite"><pre><span></span><code><span class="w">  </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">execute</span><span class="p">(</span><span class="n">Tuple</span><span class="w"> </span><span class="n">tuple</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">isTickTuple</span><span class="p">(</span><span class="n">tuple</span><span class="p">))</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">      </span><span class="c1">// now you can trigger e.g. a periodic activity</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">      </span><span class="c1">// do something with the normal tuple</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
+
+<span class="w">  </span><span class="kd">private</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">boolean</span><span class="w"> </span><span class="nf">isTickTuple</span><span class="p">(</span><span class="n">Tuple</span><span class="w"> </span><span class="n">tuple</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="k">return</span><span class="w"></span>
+<span class="w">        </span><span class="n">tuple</span><span class="p">.</span><span class="na">getSourceComponent</span><span class="p">().</span><span class="na">equals</span><span class="p">(</span><span class="n">Constants</span><span class="p">.</span><span class="na">SYSTEM_COMPONENT_ID</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"></span>
+<span class="w">            </span><span class="n">tuple</span><span class="p">.</span><span class="na">getSourceStreamId</span><span class="p">().</span><span class="na">equals</span><span class="p">(</span><span class="n">Constants</span><span class="p">.</span><span class="na">SYSTEM_TICK_STREAM_ID</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
+</code></pre></div>
+
+              
+            </article>
+            
+          </div>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+    <nav class="md-footer__inner md-grid" aria-label="Footer" >
+      
+        
+        <a href="../02-topology-development/" class="md-footer__link md-footer__link--prev" aria-label="Previous: 2. Topology and development" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              2. Topology and development
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="../../resources/" class="md-footer__link md-footer__link--next" aria-label="Next: Resources" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              Resources
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": "../../..", "features": [], "search": "../../../assets/javascripts/workers/search.85cb4492.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.f758a944.min.js"></script>
+      
+    
+  </body>
+</html>

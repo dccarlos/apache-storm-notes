@@ -1,0 +1,1008 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.3.0, mkdocs-material-8.3.4">
+    
+    
+      
+        <title>2. Topology and development - Apache Storm Notes By Carlos Dávila</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.4a0965b7.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.cbb835fc.min.css">
+        
+          
+          
+          <meta name="theme-color" content="#2094f3">
+        
+      
+      
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="blue" data-md-color-accent="blue">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#deployment" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="Apache Storm Notes By Carlos Dávila" class="md-header__button md-logo" aria-label="Apache Storm Notes By Carlos Dávila" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Apache Storm Notes By Carlos Dávila
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              2. Topology and development
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="Apache Storm Notes By Carlos Dávila" class="md-nav__button md-logo" aria-label="Apache Storm Notes By Carlos Dávila" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    Apache Storm Notes By Carlos Dávila
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2">
+          Apache Storm
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Apache Storm" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          Apache Storm
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_1" type="checkbox" id="__nav_2_1" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2_1">
+          Fundamentals
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Fundamentals" data-md-level="2">
+        <label class="md-nav__title" for="__nav_2_1">
+          <span class="md-nav__icon md-icon"></span>
+          Fundamentals
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01-introduction/" class="md-nav__link">
+        1. Introduction
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          2. Topology and development
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        2. Topology and development
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#zookeeper" class="md-nav__link">
+    Zookeeper
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#hello-world-sample" class="md-nav__link">
+    Hello world sample
+  </a>
+  
+    <nav class="md-nav" aria-label="Hello world sample">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#spout-source-sample" class="md-nav__link">
+    Spout (Source) sample
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bold-processor-sample" class="md-nav__link">
+    Bold (Processor) sample
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#topology-dag" class="md-nav__link">
+    Topology (DAG)
+  </a>
+  
+    <nav class="md-nav" aria-label="Topology (DAG)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#prepare-local" class="md-nav__link">
+    Prepare local
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#prepare-for-cluster" class="md-nav__link">
+    Prepare for cluster
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#execute-in-local" class="md-nav__link">
+    Execute in local
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#execute-in-cluster" class="md-nav__link">
+    Execute in cluster
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#storm-cluster-operations" class="md-nav__link">
+    Storm cluster operations
+  </a>
+  
+    <nav class="md-nav" aria-label="Storm cluster operations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#deactivate" class="md-nav__link">
+    Deactivate
+  </a>
+  
+    <nav class="md-nav" aria-label="Deactivate">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#deactivating-sample-topology" class="md-nav__link">
+    Deactivating sample topology
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kill" class="md-nav__link">
+    Kill
+  </a>
+  
+    <nav class="md-nav" aria-label="Kill">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#killing-sample-topology" class="md-nav__link">
+    Killing sample topology
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rebalance" class="md-nav__link">
+    Rebalance
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#change-log-level-settings" class="md-nav__link">
+    Change log level settings
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#chaning-log-level-settings" class="md-nav__link">
+    Chaning log level settings
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#storm-ui" class="md-nav__link">
+    Storm UI
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03-parallelism-and-partitioning/" class="md-nav__link">
+        3. Parallelism and partitioning
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../resources/" class="md-nav__link">
+        Resources
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#zookeeper" class="md-nav__link">
+    Zookeeper
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#hello-world-sample" class="md-nav__link">
+    Hello world sample
+  </a>
+  
+    <nav class="md-nav" aria-label="Hello world sample">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#spout-source-sample" class="md-nav__link">
+    Spout (Source) sample
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bold-processor-sample" class="md-nav__link">
+    Bold (Processor) sample
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#topology-dag" class="md-nav__link">
+    Topology (DAG)
+  </a>
+  
+    <nav class="md-nav" aria-label="Topology (DAG)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#prepare-local" class="md-nav__link">
+    Prepare local
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#prepare-for-cluster" class="md-nav__link">
+    Prepare for cluster
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#execute-in-local" class="md-nav__link">
+    Execute in local
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#execute-in-cluster" class="md-nav__link">
+    Execute in cluster
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#storm-cluster-operations" class="md-nav__link">
+    Storm cluster operations
+  </a>
+  
+    <nav class="md-nav" aria-label="Storm cluster operations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#deactivate" class="md-nav__link">
+    Deactivate
+  </a>
+  
+    <nav class="md-nav" aria-label="Deactivate">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#deactivating-sample-topology" class="md-nav__link">
+    Deactivating sample topology
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kill" class="md-nav__link">
+    Kill
+  </a>
+  
+    <nav class="md-nav" aria-label="Kill">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#killing-sample-topology" class="md-nav__link">
+    Killing sample topology
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rebalance" class="md-nav__link">
+    Rebalance
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#change-log-level-settings" class="md-nav__link">
+    Change log level settings
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#chaning-log-level-settings" class="md-nav__link">
+    Chaning log level settings
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#storm-ui" class="md-nav__link">
+    Storm UI
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+
+
+<h1 id="deployment">Deployment</h1>
+<h2 id="zookeeper">Zookeeper</h2>
+<p>Being a distributed application, Storm also uses a ZooKeeper cluster to coordinate various
+processes. All of the states associated with the cluster and the various tasks submitted to Storm
+are stored in ZooKeeper.</p>
+<p>In the ZooKeeper ensemble, one node in the cluster acts as the leader, while the rest are followers.
+If the leader node of the ZooKeeper cluster dies, then an election for the new leader takes places
+among the remaining live nodes, and a new leader is elected. All write requests coming from clients
+are forwarded to the leader node, while the follower nodes only handle the read requests. Also, we
+can't increase the write performance of the ZooKeeper ensemble by increasing the number of nodes
+because all write operations go through the leader node.</p>
+<blockquote>
+<p>It is advised to run an odd number of ZooKeeper nodes, as the ZooKeeper cluster keeps working as
+long as the majority (the number of live nodes is greater than <em>n/2</em>, where <em>n</em> being the number of
+deployed nodes) of the nodes are running. So if we have a cluster of four ZooKeeper nodes (<em>3 &gt; 4/2</em>
+; only one node can die), then we can handle only one node failure, while if we had five nodes (<em>3 &gt;
+5/2</em>; two nodes can die) in the cluster, then we can handle two node failures.</p>
+</blockquote>
+<h2 id="hello-world-sample">Hello world sample</h2>
+<h3 id="spout-source-sample">Spout (Source) sample</h3>
+<p>This spout does not connect to an external source to fetch data, but randomly generates the data and
+emits a continuous stream of records.</p>
+<div class="codehilite"><pre><span></span><code><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">SampleSpout</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">BaseRichSpout</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+
+<span class="w">  </span><span class="kd">private</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="n">serialVersionUID</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1L</span><span class="p">;</span><span class="w"></span>
+
+<span class="w">  </span><span class="kd">private</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">Map</span><span class="o">&lt;</span><span class="n">Integer</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="o">&gt;</span><span class="w"> </span><span class="n">map</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">HashMap</span><span class="o">&lt;</span><span class="n">Integer</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="o">&gt;</span><span class="p">();</span><span class="w"></span>
+
+<span class="w">  </span><span class="kd">static</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="n">map</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;google&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="n">map</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;facebook&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="n">map</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;twitter&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="n">map</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;youtube&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="n">map</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;linkedin&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
+
+<span class="w">  </span><span class="kd">private</span><span class="w"> </span><span class="n">SpoutOutputCollector</span><span class="w"> </span><span class="n">spoutOutputCollector</span><span class="p">;</span><span class="w"></span>
+
+<span class="w">  </span><span class="nd">@SuppressWarnings</span><span class="p">(</span><span class="s">&quot;rawtypes&quot;</span><span class="p">)</span><span class="w"></span>
+<span class="w">  </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">open</span><span class="p">(</span><span class="n">Map</span><span class="w"> </span><span class="n">conf</span><span class="p">,</span><span class="w"> </span><span class="n">TopologyContext</span><span class="w"> </span><span class="n">context</span><span class="p">,</span><span class="w"> </span><span class="n">SpoutOutputCollector</span><span class="w"> </span><span class="n">spoutOutputCollector</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="c1">// Open the spout</span><span class="w"></span>
+<span class="w">    </span><span class="k">this</span><span class="p">.</span><span class="na">spoutOutputCollector</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">spoutOutputCollector</span><span class="p">;</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
+
+<span class="w">  </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">nextTuple</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="c1">// Storm cluster repeatedly calls this method to emit continuous</span><span class="w"></span>
+<span class="w">    </span><span class="c1">// stream of tuples.</span><span class="w"></span>
+<span class="w">    </span><span class="kd">final</span><span class="w"> </span><span class="n">Random</span><span class="w"> </span><span class="n">rand</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Random</span><span class="p">();</span><span class="w"></span>
+<span class="w">    </span><span class="c1">// generate the random number from 0 to 4.</span><span class="w"></span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">randomNumber</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rand</span><span class="p">.</span><span class="na">nextInt</span><span class="p">(</span><span class="mi">5</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="n">spoutOutputCollector</span><span class="p">.</span><span class="na">emit</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">Values</span><span class="p">(</span><span class="n">map</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="n">randomNumber</span><span class="p">)));</span><span class="w"></span>
+<span class="w">    </span><span class="k">try</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">      </span><span class="n">Thread</span><span class="p">.</span><span class="na">sleep</span><span class="p">(</span><span class="mi">5000</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">Exception</span><span class="w"> </span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">      </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&quot;Failed to sleep the thread&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
+
+<span class="w">  </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">declareOutputFields</span><span class="p">(</span><span class="n">OutputFieldsDeclarer</span><span class="w"> </span><span class="n">declarer</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+
+<span class="w">    </span><span class="c1">// emit the tuple with field &quot;site&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="n">declarer</span><span class="p">.</span><span class="na">declare</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">Fields</span><span class="p">(</span><span class="s">&quot;site&quot;</span><span class="p">));</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</code></pre></div>
+
+<h3 id="bold-processor-sample">Bold (Processor) sample</h3>
+<p>This bolt will consume the tuples emitted by the SampleSpout spout and will print the value of the
+field site on the console.</p>
+<div class="codehilite"><pre><span></span><code><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">SampleBolt</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">BaseBasicBolt</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+
+<span class="w">  </span><span class="kd">private</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="n">serialVersionUID</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1L</span><span class="p">;</span><span class="w"></span>
+
+<span class="w">  </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">execute</span><span class="p">(</span><span class="n">Tuple</span><span class="w"> </span><span class="n">input</span><span class="p">,</span><span class="w"> </span><span class="n">BasicOutputCollector</span><span class="w"> </span><span class="n">collector</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="c1">// fetched the field &quot;site&quot; from input tuple.</span><span class="w"></span>
+<span class="w">    </span><span class="n">String</span><span class="w"> </span><span class="n">test</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">input</span><span class="p">.</span><span class="na">getStringByField</span><span class="p">(</span><span class="s">&quot;site&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="c1">// print the value of field &quot;site&quot; on console.</span><span class="w"></span>
+<span class="w">    </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&quot;######### Name of input site is : &quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">test</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
+
+<span class="w">  </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">declareOutputFields</span><span class="p">(</span><span class="n">OutputFieldsDeclarer</span><span class="w"> </span><span class="n">declarer</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</code></pre></div>
+
+<h3 id="topology-dag">Topology (DAG)</h3>
+<p>Create a main <code>SampleStormTopology</code> class within the same package. This class creates an instance of
+the spout and bolt along with the classes, and chaines them together using a <code>TopologyBuilder</code>
+class. This class uses <code>org.apache.storm.LocalCluster</code> to simulate the Storm cluster.
+The <code>LocalCluster</code> mode is used for debugging/testing the topology on a developer machine before
+deploying it on the Storm cluster. The following is the implementation of the main class for running
+locally:</p>
+<h5 id="prepare-local">Prepare local</h5>
+<div class="codehilite"><pre><span></span><code><span class="kn">package</span><span class="w"> </span><span class="nn">com.stormadvance.storm_example</span><span class="p">;</span><span class="w"></span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">org.apache.storm.Config</span><span class="p">;</span><span class="w"></span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">org.apache.storm.LocalCluster</span><span class="p">;</span><span class="w"></span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">org.apache.storm.topology.TopologyBuilder</span><span class="p">;</span><span class="w"></span>
+
+<span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">SampleStormTopology</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+
+<span class="w">  </span><span class="nd">@SuppressWarnings</span><span class="p">(</span><span class="s">&quot;resource&quot;</span><span class="p">)</span><span class="w"></span>
+<span class="w">  </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span><span class="w"> </span><span class="n">args</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">Exception</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="c1">// create an instance of TopologyBuilder class</span><span class="w"></span>
+<span class="w">    </span><span class="n">TopologyBuilder</span><span class="w"> </span><span class="n">builder</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">TopologyBuilder</span><span class="p">();</span><span class="w"></span>
+<span class="w">    </span><span class="c1">// set the spout class</span><span class="w"></span>
+<span class="w">    </span><span class="n">builder</span><span class="p">.</span><span class="na">setSpout</span><span class="p">(</span><span class="s">&quot;SampleSpout&quot;</span><span class="p">,</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">SampleSpout</span><span class="p">(),</span><span class="w"> </span><span class="mi">2</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="c1">// set the bolt class</span><span class="w"></span>
+<span class="w">    </span><span class="n">builder</span><span class="p">.</span><span class="na">setBolt</span><span class="p">(</span><span class="s">&quot;SampleBolt&quot;</span><span class="p">,</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">SampleBolt</span><span class="p">(),</span><span class="w"> </span><span class="mi">4</span><span class="p">).</span><span class="na">shuffleGrouping</span><span class="p">(</span><span class="s">&quot;SampleSpout&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="n">Config</span><span class="w"> </span><span class="n">conf</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Config</span><span class="p">();</span><span class="w"></span>
+<span class="w">    </span><span class="n">conf</span><span class="p">.</span><span class="na">setDebug</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="c1">// create an instance of LocalCluster class for</span><span class="w"></span>
+<span class="w">    </span><span class="c1">// executing topology in local mode.</span><span class="w"></span>
+<span class="w">    </span><span class="n">LocalCluster</span><span class="w"> </span><span class="n">cluster</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">LocalCluster</span><span class="p">();</span><span class="w"></span>
+<span class="w">    </span><span class="c1">// SampleStormTopology is the name of submitted topology</span><span class="w"></span>
+<span class="w">    </span><span class="n">cluster</span><span class="p">.</span><span class="na">submitTopology</span><span class="p">(</span><span class="s">&quot;SampleStormTopology&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">conf</span><span class="p">,</span><span class="w"> </span><span class="n">builder</span><span class="p">.</span><span class="na">createTopology</span><span class="p">());</span><span class="w"></span>
+<span class="w">    </span><span class="k">try</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">      </span><span class="n">Thread</span><span class="p">.</span><span class="na">sleep</span><span class="p">(</span><span class="mi">100000</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">Exception</span><span class="w"> </span><span class="n">exception</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">      </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&quot;Thread interrupted exception : &quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">exception</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="w">    </span><span class="c1">// kill the SampleStormTopology</span><span class="w"></span>
+<span class="w">    </span><span class="n">cluster</span><span class="p">.</span><span class="na">killTopology</span><span class="p">(</span><span class="s">&quot;SampleStormTopology&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="c1">// shutdown the storm test cluster</span><span class="w"></span>
+<span class="w">    </span><span class="n">cluster</span><span class="p">.</span><span class="na">shutdown</span><span class="p">();</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</code></pre></div>
+
+<h5 id="prepare-for-cluster">Prepare for cluster</h5>
+<div class="codehilite"><pre><span></span><code><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">SampleStormClusterTopology</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+
+<span class="w">  </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span><span class="w"> </span><span class="n">args</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">AlreadyAliveException</span><span class="p">,</span><span class="w"> </span><span class="n">InvalidTopologyException</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="c1">// create an instance of TopologyBuilder class</span><span class="w"></span>
+<span class="w">    </span><span class="n">TopologyBuilder</span><span class="w"> </span><span class="n">builder</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">TopologyBuilder</span><span class="p">();</span><span class="w"></span>
+<span class="w">    </span><span class="c1">// set the spout class</span><span class="w"></span>
+<span class="w">    </span><span class="n">builder</span><span class="p">.</span><span class="na">setSpout</span><span class="p">(</span><span class="s">&quot;SampleSpout&quot;</span><span class="p">,</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">SampleSpout</span><span class="p">(),</span><span class="w"> </span><span class="mi">2</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="c1">// set the bolt class</span><span class="w"></span>
+<span class="w">    </span><span class="n">builder</span><span class="p">.</span><span class="na">setBolt</span><span class="p">(</span><span class="s">&quot;SampleBolt&quot;</span><span class="p">,</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">SampleBolt</span><span class="p">(),</span><span class="w"> </span><span class="mi">4</span><span class="p">).</span><span class="na">shuffleGrouping</span><span class="p">(</span><span class="s">&quot;SampleSpout&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="n">Config</span><span class="w"> </span><span class="n">conf</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Config</span><span class="p">();</span><span class="w"></span>
+<span class="w">    </span><span class="n">conf</span><span class="p">.</span><span class="na">setNumWorkers</span><span class="p">(</span><span class="mi">3</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="c1">// This statement submit the topology on remote</span><span class="w"></span>
+<span class="w">    </span><span class="c1">// args[0] = name of topology</span><span class="w"></span>
+<span class="w">    </span><span class="k">try</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">      </span><span class="n">StormSubmitter</span><span class="p">.</span><span class="na">submitTopology</span><span class="p">(</span><span class="n">args</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span><span class="p">,</span><span class="w"> </span><span class="n">conf</span><span class="p">,</span><span class="w"> </span><span class="n">builder</span><span class="p">.</span><span class="na">createTopology</span><span class="p">());</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">AlreadyAliveException</span><span class="w"> </span><span class="n">alreadyAliveException</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">      </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">alreadyAliveException</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">InvalidTopologyException</span><span class="w"> </span><span class="n">invalidTopologyException</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">      </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">invalidTopologyException</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">AuthorizationException</span><span class="w"> </span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">      </span><span class="c1">// TODO Auto-generated catch block</span><span class="w"></span>
+<span class="w">      </span><span class="n">e</span><span class="p">.</span><span class="na">printStackTrace</span><span class="p">();</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</code></pre></div>
+
+<h5 id="execute-in-local">Execute in local</h5>
+<div class="codehilite"><pre><span></span><code><span class="c1"># go to storm_example</span>
+
+mvn clean install
+
+mvn compile exec:java -Dexec.classpathScope<span class="o">=</span>compile -Dexec.mainClass<span class="o">=</span>com.stormadvance.storm_example.SampleStormTopology
+</code></pre></div>
+
+<h5 id="execute-in-cluster">Execute in cluster</h5>
+<blockquote>
+<p>The structure of the command to execute in cluster (main node) is</p>
+<p><code>sh
+storm jar jarName.jar [TopologyMainClass] [Args]</code>
+The main function of <code>TopologyMainClass</code> is to define the topology and submit it to the Nimbus
+machine. The storm jar part takes care of connecting to the Nimbus machine and uploading the JAR
+part.</p>
+</blockquote>
+<p>In storm nimbus (main node):</p>
+<div class="codehilite"><pre><span></span><code>mvn clean install
+
+<span class="c1"># Move to main node</span>
+docker cp target/storm_example-0.0.1-SNAPSHOT-jar-with-dependencies.jar s02-nimbus:/sample_topology.jar
+
+<span class="c1"># Execute in container</span>
+docker <span class="nb">exec</span> -it s02-nimbus storm jar /sample_topology.jar com.stormadvance.storm_example.SampleStormClusterTopology storm_example
+</code></pre></div>
+
+<h3 id="storm-cluster-operations">Storm cluster operations</h3>
+<h4 id="deactivate">Deactivate</h4>
+<p>Storm supports the deactivating a topology. In the deactivated state, spouts will not emit any new
+tuples into the pipeline, but the processing of the already emitted tuples will continue.
+Deactivating the topology does not free the Storm resource. If topology is activated, the spout
+again starts emitting tuples.</p>
+<blockquote>
+<p><code>sh
+storm deactivate topologyName</code></p>
+</blockquote>
+<h5 id="deactivating-sample-topology">Deactivating sample topology</h5>
+<div class="codehilite"><pre><span></span><code>docker <span class="nb">exec</span> -it s02-nimbus storm deactivate storm_example
+</code></pre></div>
+
+<h4 id="kill">Kill</h4>
+<blockquote>
+<p><code>sh
+storm kill topologyName</code></p>
+</blockquote>
+<p><strong>Storm topologies are never-ending processes</strong>. To stop a topology, we need to kill it. When
+killed, the topology first enters into the deactivation state, processes all the tuples already
+emitted into it, and then stops. Once it is killed, it will free all the Storm resources allotted to
+this topology.</p>
+<h5 id="killing-sample-topology">Killing sample topology</h5>
+<div class="codehilite"><pre><span></span><code>docker <span class="nb">exec</span> -it s02-nimbus storm deactivate storm_example
+</code></pre></div>
+
+<h5 id="rebalance">Rebalance</h5>
+<h5 id="change-log-level-settings">Change log level settings</h5>
+<blockquote>
+<p><code>storm set_log_level [topology name] -l [logger name]=[LEVEL]:[TIMEOUT]</code></p>
+</blockquote>
+<p>The <code>TIMEOUT</code> is the time in seconds. The log level will go back to normal after the timeout time.
+The value of <code>TIMEOUT</code> is mandatory if you are setting the log level to <code>DEBUG</code>/<code>ALL</code>.</p>
+<h5 id="chaning-log-level-settings">Chaning log level settings</h5>
+<div class="codehilite"><pre><span></span><code>docker <span class="nb">exec</span> -it s02-nimbus storm set_log_level storm_example -l <span class="nv">ROOT</span><span class="o">=</span>DEBUG:30
+</code></pre></div>
+
+<h3 id="storm-ui">Storm UI</h3>
+<p><strong>While submitting a topology to the cluster, the user first needs to make sure that the value of
+the Free slots column should not be zero; otherwise, the topology doesn't get any worker for
+processing and will wait in the queue until a workers becomes free</strong>.</p>
+<p>A node with the status leader is an active master while the node with the status Not a Leader is
+a <code>passive master</code>.</p>
+
+              
+            </article>
+            
+          </div>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+    <nav class="md-footer__inner md-grid" aria-label="Footer" >
+      
+        
+        <a href="../01-introduction/" class="md-footer__link md-footer__link--prev" aria-label="Previous: 1. Introduction" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              1. Introduction
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="../03-parallelism-and-partitioning/" class="md-footer__link md-footer__link--next" aria-label="Next: 3. Parallelism and partitioning" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              3. Parallelism and partitioning
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": "../../..", "features": [], "search": "../../../assets/javascripts/workers/search.85cb4492.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.f758a944.min.js"></script>
+      
+    
+  </body>
+</html>
