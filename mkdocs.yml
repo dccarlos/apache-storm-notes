@@ -13,4 +13,7 @@ nav:
   - "Home": "index.md"
   - "Apache Storm":
       - "Fundamentals":
-          - "1 .Notification Module": "notes/module-01/01-introduction.md"
+          - "1. Introduction": "notes/module-01/01-introduction.md"
+          - "2. Topology and development": "notes/module-01/02-topology-development.md"
+          - "3. Parallelism and partitioning": "notes/module-01/03-parallelism-and-partitioning.md"
+      - "Resources": "notes/resources.md"
